@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 
 """
 Swedish Remote Job Agent — Gowtami Devarenti
 ============================================
@@ -90,13 +90,19 @@ def api_search(query):
     with urllib.request.urlopen(req, timeout=30) as r:
         return json.load(r).get("hits", [])
 
+
 def is_remote(job):
+    working_hours = job.get("working_hours_type") or {}
+    description = job.get("description") or {}
+
     text = " ".join([
-        job.get("headline", ""),
-        (job.get("working_hours_type") or {}).get("label", ""),
-        (job.get("description") or {}).get("text", "")[:4000],
+        str(job.get("headline") or ""),
+        str(working_hours.get("label") or ""),
+        str(description.get("text") or "")[:4000],
     ]).lower()
+
     return any(w in text for w in REMOTE_WORDS)
+
 
 def norm(job):
     emp = (job.get("employer") or {}).get("name", "Unknown")
